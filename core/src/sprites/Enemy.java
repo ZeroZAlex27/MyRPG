@@ -14,21 +14,21 @@ public class Enemy extends Sprite {
     public Enemy(World world, GameMapScreen screen, float x, float y) {
         this.world = world;
         setPosition(x, y);
-        standing = new TextureRegion(screen.getAtlas().findRegion("skeleton"), 0, 0, 16, 16);
-        setBounds(getX(), getY(), 16, 16);
+        standing = new TextureRegion(screen.getAtlas().findRegion("skeleton"), 0, 0, 50, 37);
+        setBounds(getX(), getY(), 50, 37);
         setRegion(standing);
         defineBody();
     }
 
     public void defineBody() {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(getX(), getY());
+        bodyDef.position.set(100, 100);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         box2Body = world.createBody(bodyDef);
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(16, 16);
+        polygonShape.setAsBox(8, 16);
 
         fixtureDef.shape = polygonShape;
         box2Body.createFixture(fixtureDef).setUserData(this);

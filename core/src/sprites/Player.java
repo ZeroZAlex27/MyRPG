@@ -1,8 +1,10 @@
 package sprites;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import screens.GameMapScreen;
 import utils.Data;
 
@@ -12,41 +14,77 @@ public class Player extends Sprite {
     private Body box2Body;
     private TextureRegion playerIdleTexture;
     public enum State {STANDING, RUNNING}
+    public State previousState;
     public State currentState;
-    private boolean runningToRight;
+    private float stateTimer;
+    private boolean isRunning;
+    private boolean canMove;
+    private Animation<TextureRegion> runAnimation;
+    private Animation<TextureRegion> standAnimation;
 
     public Player(World world, GameMapScreen gameMapScreen) {
         super(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE));
         this.world = world;
         definePlayerBox2d();
         currentState = State.STANDING;
-        runningToRight = true;
-        playerIdleTexture = new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), 2, 2, 50, 37);
-        setBounds(0, 0, 16, 16);
+        isRunning = true;
+        canMove = true;
+        playerIdleTexture = new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
+        previousState = State.STANDING;
+        stateTimer = 0;
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+
+        for(int i = 0; i <= 150; i+=50)
+        {
+            frames.add(new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
+        }
+        standAnimation = new Animation<>(0.3f, frames);
+        frames.clear();
+        for(int i = 50; i <= 300; i+=50)
+        {
+            frames.add(new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
+        }
+        runAnimation = new Animation<>(0.1f, frames);
+        frames.clear();
+
+        setBounds(0, 0, 50, 37);
         setRegion(playerIdleTexture);
     }
+
     private TextureRegion getFrame(float deltaTime)
     {
         currentState = getState();
         TextureRegion region;
         switch(currentState)
         {
+            case RUNNING:
+                region = runAnimation.getKeyFrame(stateTimer, true);
+                break;
             case STANDING:
             default:
-                region = playerIdleTexture;
+                region = standAnimation.getKeyFrame(stateTimer, true);
                 break;
         }
 
-        if((box2Body.getLinearVelocity().x < 0 || !runningToRight) && !region.isFlipX())
+        if((box2Body.getLinearVelocity().x < 0 || !isRunning) && !region.isFlipX())
         {
             region.flip(true, false);
-            runningToRight = false;
+            isRunning = false;
         }
-        else if((box2Body.getLinearVelocity().x > 0 || runningToRight) && region.isFlipX())
+        else if((box2Body.getLinearVelocity().x > 0 || isRunning) && region.isFlipX())
         {
             region.flip(true, false);
-            runningToRight = true;
+            isRunning = true;
         }
+
+        if(currentState == previousState) {
+            stateTimer = stateTimer + deltaTime;
+        } else {
+            stateTimer = 0;
+        }
+        previousState = currentState;
+
         return region;
     }
 
@@ -64,7 +102,7 @@ public class Player extends Sprite {
 
         FixtureDef fixtureDef = new FixtureDef();
         PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(16, 16);
+        polygonShape.setAsBox(8, 16);
 
         fixtureDef.shape = polygonShape;
         box2Body.createFixture(fixtureDef).setUserData(this);
@@ -75,6 +113,10 @@ public class Player extends Sprite {
     }
 
     public State getState() {
+        if(box2Body.getLinearVelocity().x != 0 || box2Body.getLinearVelocity().y != 0)
+        {
+            return State.RUNNING;
+        }
         return State.STANDING;
     }
 }

@@ -33,13 +33,20 @@ public class GameMapScreen implements Screen {
     private World world;
     private Player player;
     private TextureAtlas atlas;
+    private Box2DDebugRenderer box2DDebugRenderer;
+    private boolean runningToRight;
+    private boolean runningToLeft;
+    private boolean runningToUp;
+    private boolean runningToDown;
 
     public GameMapScreen(Main mainGame) {
         this.mainGame = mainGame;
         world = new World(new Vector2(0,0), true);
+
         world.setContactListener(new WorldContactListener());
         atlas = new TextureAtlas("player/Player_sprites.atlas");
         player = new Player(world, this);
+        box2DDebugRenderer = new Box2DDebugRenderer();
 
         loadMap();
 
@@ -70,20 +77,23 @@ public class GameMapScreen implements Screen {
     }
 
     private void handleInput(float dt) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.D) && player.getBox2Body().getLinearVelocity().x <= 10f) {
-            player.getBox2Body().applyLinearImpulse(new Vector2(10f, 0), player.getBox2Body().getWorldCenter(), true);
+        if(Gdx.input.isKeyPressed(Input.Keys.D)) {
+            player.getBox2Body().applyLinearImpulse(new Vector2(5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.A) && player.getBox2Body().getLinearVelocity().x >= -10f)
+        else if(Gdx.input.isKeyPressed(Input.Keys.A))
         {
-            player.getBox2Body().applyLinearImpulse(new Vector2(-10f, 0), player.getBox2Body().getWorldCenter(), true);
+            player.getBox2Body().applyLinearImpulse(new Vector2(-5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.W) && player.getBox2Body().getLinearVelocity().y <= 10f)
+        else if(Gdx.input.isKeyPressed(Input.Keys.W))
         {
-            player.getBox2Body().applyLinearImpulse(new Vector2(0, 10f), player.getBox2Body().getWorldCenter(), true);
+            player.getBox2Body().applyLinearImpulse(new Vector2(0, 5f), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.S) && player.getBox2Body().getLinearVelocity().y >= -10f)
+        else if(Gdx.input.isKeyPressed(Input.Keys.S))
         {
-            player.getBox2Body().applyLinearImpulse(new Vector2(0, -10f), player.getBox2Body().getWorldCenter(), true);
+            player.getBox2Body().applyLinearImpulse(new Vector2(0, -5f), player.getBox2Body().getWorldCenter(), true);
+        }
+        else if(!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.W) && !Gdx.input.isKeyPressed(Input.Keys.S)){
+            player.getBox2Body().setLinearVelocity(0,0);
         }
     }
 
@@ -114,6 +124,7 @@ public class GameMapScreen implements Screen {
         player.draw(mainGame.getBatch());
         mainGame.getBatch().end();
         mainGame.getBatch().setProjectionMatrix(camera.combined);
+        box2DDebugRenderer.render(world, camera.combined);
     }
 
     @Override
