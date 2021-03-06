@@ -1,8 +1,6 @@
-package screens;
+package screens.mapScreens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -14,45 +12,43 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import utils.Data;
 import com.zeroz.games.Main;
 import sprites.Player;
+import utils.Data;
+import utils.Hud;
 import utils.WorldContactListener;
 
-public class GameMapScreen implements Screen {
+public class Map2Screen implements Screen {
 
     Main mainGame;
-    Data data;
     TmxMapLoader mapLoader;
     TiledMap map;
+
     OrthographicCamera camera;
     OrthogonalTiledMapRenderer renderer;
-    Viewport viewport;
+
     private World world;
     private Player player;
     private TextureAtlas atlas;
+    private Hud hud;
     private Box2DDebugRenderer box2DDebugRenderer;
-    private boolean runningToRight;
-    private boolean runningToLeft;
-    private boolean runningToUp;
-    private boolean runningToDown;
 
-    public GameMapScreen(Main mainGame) {
+    public Map2Screen(Main mainGame) {
         this.mainGame = mainGame;
         world = new World(new Vector2(0,0), true);
 
         world.setContactListener(new WorldContactListener());
         atlas = new TextureAtlas("player/Player_sprites.atlas");
-        player = new Player(world, this);
+        player = new Player(world, this, (Data.Map2_WIDTH / 2), 50);
         box2DDebugRenderer = new Box2DDebugRenderer();
 
-        loadMap();
+        mapLoader = new TmxMapLoader();
+        map = mapLoader.load("maps/map2/map2.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map);
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(226, 127, camera);
-        camera.position.set(viewport.getWorldWidth() / 2, viewport.getWorldHeight() / 2, 0);
+        hud = new Hud(camera);
+        //camera.position.set(hud.getViewport().getWorldWidth() / 2, hud.getViewport().getWorldHeight() / 2, 0);
 
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -70,29 +66,23 @@ public class GameMapScreen implements Screen {
         }
     }
 
-    private void loadMap() {
-        mapLoader = new TmxMapLoader();
-        map = mapLoader.load("maps/map1/map1.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map);
-    }
-
-    private void handleInput(float dt) {
+    private void handleInput() {
         if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             player.getBox2Body().applyLinearImpulse(new Vector2(5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        else if(Gdx.input.isKeyPressed(Input.Keys.A))
+        if(Gdx.input.isKeyPressed(Input.Keys.A))
         {
             player.getBox2Body().applyLinearImpulse(new Vector2(-5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        else if(Gdx.input.isKeyPressed(Input.Keys.W))
+        if(Gdx.input.isKeyPressed(Input.Keys.W))
         {
             player.getBox2Body().applyLinearImpulse(new Vector2(0, 5f), player.getBox2Body().getWorldCenter(), true);
         }
-        else if(Gdx.input.isKeyPressed(Input.Keys.S))
+        if(Gdx.input.isKeyPressed(Input.Keys.S))
         {
             player.getBox2Body().applyLinearImpulse(new Vector2(0, -5f), player.getBox2Body().getWorldCenter(), true);
         }
-        else if(!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.W) && !Gdx.input.isKeyPressed(Input.Keys.S)){
+        if(!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.W) && !Gdx.input.isKeyPressed(Input.Keys.S)){
             player.getBox2Body().setLinearVelocity(0,0);
         }
     }
@@ -114,22 +104,22 @@ public class GameMapScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(80/255f, 185/255f, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         update(delta);
-        handleInput(delta);
+        handleInput();
         renderer.render();
-
         mainGame.getBatch().begin();
         player.draw(mainGame.getBatch());
         mainGame.getBatch().end();
         mainGame.getBatch().setProjectionMatrix(camera.combined);
+        //hud.getStage().draw();
         box2DDebugRenderer.render(world, camera.combined);
     }
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width, height);
+        hud.getViewport().update(width, height);
     }
 
     @Override

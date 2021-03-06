@@ -3,7 +3,7 @@ package sprites;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
-import screens.GameMapScreen;
+import screens.mapScreens.Map1Screen;
 
 public class Enemy extends Sprite {
 
@@ -11,7 +11,7 @@ public class Enemy extends Sprite {
     private Body box2Body;
     private TextureRegion standing;
 
-    public Enemy(World world, GameMapScreen screen, float x, float y) {
+    public Enemy(World world, Map1Screen screen, float x, float y) {
         this.world = world;
         setPosition(x, y);
         standing = new TextureRegion(screen.getAtlas().findRegion("skeleton"), 0, 0, 50, 37);

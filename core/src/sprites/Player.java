@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import screens.GameMapScreen;
+import screens.mapScreens.Map1Screen;
+import screens.mapScreens.Map2Screen;
 import utils.Data;
 
 public class Player extends Sprite {
@@ -18,18 +19,16 @@ public class Player extends Sprite {
     public State currentState;
     private float stateTimer;
     private boolean isRunning;
-    private boolean canMove;
     private Animation<TextureRegion> runAnimation;
     private Animation<TextureRegion> standAnimation;
 
-    public Player(World world, GameMapScreen gameMapScreen) {
-        super(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE));
+    public Player(World world, Map1Screen map1Screen, int x, int y) {
+        super(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE));
         this.world = world;
-        definePlayerBox2d();
+        definePlayerBox2d(x, y);
         currentState = State.STANDING;
         isRunning = true;
-        canMove = true;
-        playerIdleTexture = new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
+        playerIdleTexture = new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
         previousState = State.STANDING;
         stateTimer = 0;
 
@@ -37,13 +36,42 @@ public class Player extends Sprite {
 
         for(int i = 0; i <= 150; i+=50)
         {
-            frames.add(new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
+            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
         }
         standAnimation = new Animation<>(0.3f, frames);
         frames.clear();
         for(int i = 50; i <= 300; i+=50)
         {
-            frames.add(new TextureRegion(gameMapScreen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
+            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
+        }
+        runAnimation = new Animation<>(0.1f, frames);
+        frames.clear();
+
+        setBounds(0, 0, 50, 37);
+        setRegion(playerIdleTexture);
+    }
+
+    public Player(World world, Map2Screen map2Screen, int x, int y) {
+        super(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE));
+        this.world = world;
+        definePlayerBox2d(x, y);
+        currentState = State.STANDING;
+        isRunning = true;
+        playerIdleTexture = new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
+        previousState = State.STANDING;
+        stateTimer = 0;
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+
+        for(int i = 0; i <= 150; i+=50)
+        {
+            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
+        }
+        standAnimation = new Animation<>(0.3f, frames);
+        frames.clear();
+        for(int i = 50; i <= 300; i+=50)
+        {
+            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
         }
         runAnimation = new Animation<>(0.1f, frames);
         frames.clear();
@@ -94,9 +122,9 @@ public class Player extends Sprite {
         setRegion(getFrame(deltaTime));
     }
 
-    public void definePlayerBox2d() {
+    public void definePlayerBox2d(int x, int y) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(Data.Map1_WIDTH / 2, 10);
+        bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         box2Body = world.createBody(bodyDef);
 

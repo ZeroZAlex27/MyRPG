@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import screens.mapScreens.Map1Screen;
+import screens.mapScreens.Map2Screen;
 import utils.Data;
 import com.zeroz.games.Main;
 
@@ -50,7 +52,7 @@ public class MainMenuScreen implements Screen {
             mainGame.getBatch().draw(playButtonActive, x, PLAY_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
             if (Gdx.input.isTouched()) {
                 this.dispose();
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new GameMapScreen(mainGame));
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new Map2Screen(mainGame));
             }
         } else {
             mainGame.getBatch().draw(playButtonInactive, x, PLAY_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
