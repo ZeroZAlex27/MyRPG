@@ -15,11 +15,11 @@ public class SettingsScreen implements Screen {
     private static final int SETTINGS_BUTTON_Y = 600;
     private static final int BACK_BUTTON_Y = 50;
 
-    Main mainGame;
+    private Main mainGame;
 
-    Texture settingsButtonActive;
-    Texture backButtonActive;
-    Texture backButtonInactive;
+    private Texture settingsButtonActive;
+    private Texture backButtonActive;
+    private Texture backButtonInactive;
 
     public SettingsScreen(Main mainGame) {
         this.mainGame = mainGame;

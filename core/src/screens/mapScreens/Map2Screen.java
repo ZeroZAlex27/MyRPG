@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.zeroz.games.Main;
 import sprites.Player;
 import utils.Data;
@@ -20,12 +21,13 @@ import utils.WorldContactListener;
 
 public class Map2Screen implements Screen {
 
-    Main mainGame;
-    TmxMapLoader mapLoader;
-    TiledMap map;
+    private Main mainGame;
+    private TmxMapLoader mapLoader;
+    private TiledMap map;
 
-    OrthographicCamera camera;
-    OrthogonalTiledMapRenderer renderer;
+    private OrthographicCamera camera;
+    private OrthogonalTiledMapRenderer renderer;
+    private FillViewport playerViewport;
 
     private World world;
     private Player player;
@@ -39,7 +41,7 @@ public class Map2Screen implements Screen {
 
         world.setContactListener(new WorldContactListener());
         atlas = new TextureAtlas("player/Player_sprites.atlas");
-        player = new Player(world, this, (Data.Map2_WIDTH / 2), 50);
+        player = new Player(world, this, Data.Map2_WIDTH / 2, 50);
         box2DDebugRenderer = new Box2DDebugRenderer();
 
         mapLoader = new TmxMapLoader();
@@ -47,8 +49,8 @@ public class Map2Screen implements Screen {
         renderer = new OrthogonalTiledMapRenderer(map);
 
         camera = new OrthographicCamera();
-        hud = new Hud(camera);
-        //camera.position.set(hud.getViewport().getWorldWidth() / 2, hud.getViewport().getWorldHeight() / 2, 0);
+        playerViewport = new FillViewport(200, 200, camera);
+        hud = new Hud();
 
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
@@ -70,16 +72,13 @@ public class Map2Screen implements Screen {
         if(Gdx.input.isKeyPressed(Input.Keys.D)) {
             player.getBox2Body().applyLinearImpulse(new Vector2(5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.A))
-        {
+        if(Gdx.input.isKeyPressed(Input.Keys.A)) {
             player.getBox2Body().applyLinearImpulse(new Vector2(-5f, 0), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.W))
-        {
+        if(Gdx.input.isKeyPressed(Input.Keys.W)) {
             player.getBox2Body().applyLinearImpulse(new Vector2(0, 5f), player.getBox2Body().getWorldCenter(), true);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.S))
-        {
+        if(Gdx.input.isKeyPressed(Input.Keys.S)) {
             player.getBox2Body().applyLinearImpulse(new Vector2(0, -5f), player.getBox2Body().getWorldCenter(), true);
         }
         if(!Gdx.input.isKeyPressed(Input.Keys.D) && !Gdx.input.isKeyPressed(Input.Keys.A) && !Gdx.input.isKeyPressed(Input.Keys.W) && !Gdx.input.isKeyPressed(Input.Keys.S)){
@@ -96,7 +95,6 @@ public class Map2Screen implements Screen {
     {
         world.step(1/60f, 6, 2);
         player.update(dt);
-        camera.update();
         renderer.setView(camera);
         camera.position.x = player.getBox2Body().getPosition().x;
         camera.position.y = player.getBox2Body().getPosition().y;
@@ -106,20 +104,26 @@ public class Map2Screen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        camera.update();
         update(delta);
         handleInput();
         renderer.render();
+        mainGame.getBatch().setProjectionMatrix(camera.combined);
         mainGame.getBatch().begin();
         player.draw(mainGame.getBatch());
         mainGame.getBatch().end();
-        mainGame.getBatch().setProjectionMatrix(camera.combined);
-        //hud.getStage().draw();
+
+        mainGame.getBatch().setProjectionMatrix(hud.getStage().getCamera().combined);
+        hud.getStage().act(delta);
+        hud.getStage().draw();
+
         box2DDebugRenderer.render(world, camera.combined);
     }
 
     @Override
     public void resize(int width, int height) {
-        hud.getViewport().update(width, height);
+        playerViewport.update(width, height);
+        hud.getStage().getViewport().update(width, height);
     }
 
     @Override
@@ -141,6 +145,7 @@ public class Map2Screen implements Screen {
     public void dispose() {
         map.dispose();
         renderer.dispose();
+        hud.dispose();
     }
 
     public TextureAtlas getAtlas(){
