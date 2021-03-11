@@ -1,2 +1,2 @@
 # MyRPG
-![](name-of-giphy.gif)
+![](GameGif1.gif)
