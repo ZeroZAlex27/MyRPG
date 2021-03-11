@@ -1,13 +1,14 @@
 package utils;
 
-public class Data {
+public class GameData {
 
     //ScreenResolution
     public static final int SCREEN_WIDTH = 1280;
     public static final int SCREEN_HEIGHT = 720;
 
     //AtlasObjects
-    public static final String PLAYER_SPRITE = "adventurer-v1.5-Sheet";
+    public static final String PLAYER_SPRITE = "Player";
+    public static final String ENEMIES_SPRITE = "DungeonEnemies";
 
     //WorldMap1
     public static final int Map1_WIDTH = 40 * 16;

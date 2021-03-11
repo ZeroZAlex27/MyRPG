@@ -1,0 +1,20 @@
+
+TextureAtlas.png
+size: 1024, 1024
+format: RGBA8888
+filter: Nearest, Nearest
+repeat: none
+DungeonEnemies
+  rotate: false
+  xy: 2, 133
+  size: 498, 461
+  orig: 498, 461
+  offset: 0, 0
+  index: -1
+Player
+  rotate: false
+  xy: 502, 2
+  size: 352, 592
+  orig: 352, 592
+  offset: 0, 0
+  index: -1

@@ -5,44 +5,46 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import screens.BattleScreen;
 import screens.mapScreens.Map1Screen;
 import screens.mapScreens.Map2Screen;
-import utils.Data;
+import utils.BattleHud;
+import utils.GameData;
 
 public class Player extends Sprite {
 
+    private BattleHud battleHud;
     private World world;
     private Body box2Body;
     private TextureRegion playerIdleTexture;
-    public enum State {STANDING, RUNNING}
+    public enum State {STANDING, RUNNING, ATTACKING}
     public State previousState;
     public State currentState;
     private float stateTimer;
-    private boolean isRunning;
+    private boolean runningToRight;
+    private boolean isBattle = true;
     private Animation<TextureRegion> runAnimation;
     private Animation<TextureRegion> standAnimation;
+    private Animation<TextureRegion> attackAnimation;
 
     public Player(World world, Map1Screen map1Screen, int x, int y) {
-        super(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE));
         this.world = world;
         definePlayerBox2d(x, y);
         currentState = State.STANDING;
-        isRunning = true;
-        playerIdleTexture = new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
         previousState = State.STANDING;
         stateTimer = 0;
+        playerIdleTexture = new TextureRegion(map1Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), 1, 2, 50, 37);
+
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
-        for(int i = 0; i <= 150; i+=50)
-        {
-            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
+        for(int i = 0; i <= 150; i+= 50) {
+            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 2, 50, 37));
         }
         standAnimation = new Animation<>(0.3f, frames);
         frames.clear();
-        for(int i = 50; i <= 300; i+=50)
-        {
-            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
+        for(int i = 50; i <= 300; i+= 50) {
+            frames.add(new TextureRegion(map1Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 37, 50, 37));
         }
         runAnimation = new Animation<>(0.1f, frames);
         frames.clear();
@@ -52,28 +54,59 @@ public class Player extends Sprite {
     }
 
     public Player(World world, Map2Screen map2Screen, int x, int y) {
-        super(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE));
         this.world = world;
         definePlayerBox2d(x, y);
         currentState = State.STANDING;
-        isRunning = true;
-        playerIdleTexture = new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), 1, 2, 50, 37);
         previousState = State.STANDING;
+        runningToRight = true;
         stateTimer = 0;
+        playerIdleTexture = new TextureRegion(map2Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), 1, 2, 50, 37);
 
         Array<TextureRegion> frames = new Array<TextureRegion>();
 
-        for(int i = 0; i <= 150; i+=50)
-        {
-            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 2, 50, 37));
+        for(int i = 0; i <= 150; i+= 50) {
+            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 2, 50, 37));
         }
         standAnimation = new Animation<>(0.3f, frames);
         frames.clear();
-        for(int i = 50; i <= 300; i+=50)
-        {
-            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(Data.PLAYER_SPRITE), i * 1, 37, 50, 37));
+        for(int i = 50; i <= 300; i+= 50) {
+            frames.add(new TextureRegion(map2Screen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 37, 50, 37));
         }
         runAnimation = new Animation<>(0.1f, frames);
+        frames.clear();
+
+        setBounds(0, 0, 50, 37);
+        setRegion(playerIdleTexture);
+    }
+
+    public Player(World world, BattleScreen battleScreen, BattleHud battleHud, int x, int y) {
+        this.battleHud = battleHud;
+        this.world = world;
+        definePlayerBox2d(x, y);
+        currentState = State.STANDING;
+        previousState = State.STANDING;
+        runningToRight = true;
+        stateTimer = 0;
+        playerIdleTexture = new TextureRegion(battleScreen.getAtlas().findRegion(GameData.PLAYER_SPRITE), 1, 2, 50, 37);
+
+        Array<TextureRegion> frames = new Array<TextureRegion>();
+
+        for(int i = 150; i <= 300; i+= 50)
+        {
+            frames.add(new TextureRegion(battleScreen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 185, 50, 37));
+        }
+        standAnimation = new Animation<>(0.3f, frames);
+        frames.clear();
+        for(int i = 0; i <= 300; i+= 50) {
+            frames.add(new TextureRegion(battleScreen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 222, 50, 37));
+        }
+        for(int i = 0; i <= 300; i+= 50) {
+            frames.add(new TextureRegion(battleScreen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 259, 50, 37));
+        }
+        for(int i = 0; i <= 150; i+= 50) {
+            frames.add(new TextureRegion(battleScreen.getAtlas().findRegion(GameData.PLAYER_SPRITE), i * 1, 296, 50, 37));
+        }
+        attackAnimation = new Animation<>(0.1f, frames);
         frames.clear();
 
         setBounds(0, 0, 50, 37);
@@ -86,6 +119,9 @@ public class Player extends Sprite {
         TextureRegion region;
         switch(currentState)
         {
+            case ATTACKING:
+                region = attackAnimation.getKeyFrame(stateTimer, true);
+                break;
             case RUNNING:
                 region = runAnimation.getKeyFrame(stateTimer, true);
                 break;
@@ -95,15 +131,15 @@ public class Player extends Sprite {
                 break;
         }
 
-        if((box2Body.getLinearVelocity().x < 0 || !isRunning) && !region.isFlipX())
+        if((box2Body.getLinearVelocity().x < 0 || !runningToRight) && !region.isFlipX())
         {
             region.flip(true, false);
-            isRunning = false;
+            runningToRight = false;
         }
-        else if((box2Body.getLinearVelocity().x > 0 || isRunning) && region.isFlipX())
+        else if((box2Body.getLinearVelocity().x > 0 || runningToRight) && region.isFlipX())
         {
             region.flip(true, false);
-            isRunning = true;
+            runningToRight = true;
         }
 
         if(currentState == previousState) {
@@ -141,9 +177,13 @@ public class Player extends Sprite {
     }
 
     public State getState() {
-        if(box2Body.getLinearVelocity().x != 0 || box2Body.getLinearVelocity().y != 0)
-        {
+        if (box2Body.getLinearVelocity().x != 0 || box2Body.getLinearVelocity().y != 0) {
             return State.RUNNING;
+        }
+        if(this.battleHud != null) {
+            if(battleHud.cd == true) {
+                return State.ATTACKING;
+            }
         }
         return State.STANDING;
     }

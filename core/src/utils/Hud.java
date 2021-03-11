@@ -1,7 +1,6 @@
 package utils;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -9,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.zeroz.games.Main;
+import stats.PlayerStats;
 
 public class Hud {
 
     private Main mainGame;
+    private PlayerStats playerStats;
     private Viewport stageViewport;
     private Stage stage;
     private Label levelLabel;
@@ -22,16 +23,18 @@ public class Hud {
     private Label manaLabel;
     private Label manaNumberLabel;
 
-    public Hud()
+    public Hud(Main mainGame)
     {
-        stageViewport = new FillViewport(Data.SCREEN_WIDTH, Data.SCREEN_HEIGHT);
+        this.mainGame = mainGame;
+        playerStats = new PlayerStats(mainGame);
+        stageViewport = new FillViewport(GameData.SCREEN_WIDTH, GameData.SCREEN_HEIGHT);
         stage = new Stage(stageViewport);
+        Label.LabelStyle labelStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
 
         Table levelTable = new Table();
         levelTable.setFillParent(true);
-        Label.LabelStyle labelStyle = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
         levelLabel = new Label("LEVEL", labelStyle);
-        levelNumberLabel = new Label("1", labelStyle);
+        levelNumberLabel = new Label("" + playerStats.getPlayerLevel(), labelStyle);
         levelTable.left().top().pad(10);
         levelTable.add(levelLabel);
         levelTable.add(levelNumberLabel).padLeft(10);
@@ -39,9 +42,9 @@ public class Hud {
         Table HpAndMpTable = new Table();
         HpAndMpTable.setFillParent(true);
         healthLabel = new Label("HP", labelStyle);
-        healthNumberLabel = new Label("100", labelStyle);
+        healthNumberLabel = new Label("" + playerStats.getPlayerHP(), labelStyle);
         manaLabel = new Label("Mana", labelStyle);
-        manaNumberLabel = new Label("10", labelStyle);
+        manaNumberLabel = new Label("" + playerStats.getPlayerMP(), labelStyle);
         HpAndMpTable.center().padBottom(150);
         HpAndMpTable.add(healthLabel);
         HpAndMpTable.add(healthNumberLabel).padLeft(10);

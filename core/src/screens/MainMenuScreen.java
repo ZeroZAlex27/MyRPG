@@ -6,8 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import screens.mapScreens.Map1Screen;
-import screens.mapScreens.Map2Screen;
-import utils.Data;
+import utils.GameData;
 import com.zeroz.games.Main;
 
 public class MainMenuScreen implements Screen {
@@ -47,17 +46,17 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClearColor(1, 128/255f, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mainGame.getBatch().begin();
-        int x = Data.SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2;
-        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && Data.SCREEN_HEIGHT - Gdx.input.getY() < PLAY_BUTTON_Y + BUTTON_HEIGHT && Data.SCREEN_HEIGHT - Gdx.input.getY() > PLAY_BUTTON_Y) {
+        int x = GameData.SCREEN_WIDTH / 2 - BUTTON_WIDTH / 2;
+        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && GameData.SCREEN_HEIGHT - Gdx.input.getY() < PLAY_BUTTON_Y + BUTTON_HEIGHT && GameData.SCREEN_HEIGHT - Gdx.input.getY() > PLAY_BUTTON_Y) {
             mainGame.getBatch().draw(playButtonActive, x, PLAY_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
             if (Gdx.input.isTouched()) {
                 this.dispose();
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new Map2Screen(mainGame));
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new Map1Screen(mainGame));
             }
         } else {
             mainGame.getBatch().draw(playButtonInactive, x, PLAY_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
-        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && Data.SCREEN_HEIGHT - Gdx.input.getY() < SETTINGS_BUTTON_Y + BUTTON_HEIGHT && Data.SCREEN_HEIGHT - Gdx.input.getY() > SETTINGS_BUTTON_Y) {
+        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && GameData.SCREEN_HEIGHT - Gdx.input.getY() < SETTINGS_BUTTON_Y + BUTTON_HEIGHT && GameData.SCREEN_HEIGHT - Gdx.input.getY() > SETTINGS_BUTTON_Y) {
             mainGame.getBatch().draw(settingsButtonActive, x, SETTINGS_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
             if (Gdx.input.isTouched()) {
                 this.dispose();
@@ -66,7 +65,7 @@ public class MainMenuScreen implements Screen {
         } else {
             mainGame.getBatch().draw(settingsButtonInactive, x, SETTINGS_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
         }
-        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && Data.SCREEN_HEIGHT - Gdx.input.getY() < EXIT_BUTTON_Y + BUTTON_HEIGHT && Data.SCREEN_HEIGHT - Gdx.input.getY() > EXIT_BUTTON_Y) {
+        if(Gdx.input.getX() < x + BUTTON_WIDTH && Gdx.input.getX() > x && GameData.SCREEN_HEIGHT - Gdx.input.getY() < EXIT_BUTTON_Y + BUTTON_HEIGHT && GameData.SCREEN_HEIGHT - Gdx.input.getY() > EXIT_BUTTON_Y) {
             mainGame.getBatch().draw(exitButtonActive, x, EXIT_BUTTON_Y, BUTTON_WIDTH, BUTTON_HEIGHT);
             if (Gdx.input.isTouched()) {
                 Gdx.app.exit();
